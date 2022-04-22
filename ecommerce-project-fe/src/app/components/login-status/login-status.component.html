@@ -6,5 +6,7 @@
 
   <button *ngIf="!isAuthenticated" routerLink="/login" class="security-btn-submit">Login</button>
   <button *ngIf="isAuthenticated" (click)="logout()" class="security-btn-submit">Logout</button>
+  <button *ngIf="isAuthenticated" routerLink="/members" class="security-btn-submit">Member</button>
+  <button *ngIf="isAuthenticated" routerLink="/order-history" class="security-btn-submit">Orders</button>
 
 </div>

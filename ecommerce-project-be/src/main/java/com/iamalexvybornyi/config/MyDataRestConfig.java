@@ -1,10 +1,8 @@
 package com.iamalexvybornyi.config;
 
-import com.iamalexvybornyi.entity.Country;
-import com.iamalexvybornyi.entity.Product;
-import com.iamalexvybornyi.entity.ProductCategory;
-import com.iamalexvybornyi.entity.State;
+import com.iamalexvybornyi.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
@@ -20,6 +18,9 @@ import java.util.Set;
 @Configuration
 public class MyDataRestConfig implements RepositoryRestConfigurer {
 
+    @Value("${allowed.origins}")
+    private String[] theAllowedOrigins;
+
     private EntityManager entityManager;
 
     @Autowired
@@ -29,15 +30,19 @@ public class MyDataRestConfig implements RepositoryRestConfigurer {
 
     @Override
     public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config, CorsRegistry cors) {
-        HttpMethod[] unsupportedMethods = {HttpMethod.PUT, HttpMethod.POST, HttpMethod.DELETE};
+        HttpMethod[] unsupportedMethods = {HttpMethod.PUT, HttpMethod.POST, HttpMethod.DELETE, HttpMethod.PATCH};
 
         disableHttpMethods(Product.class, config, unsupportedMethods);
         disableHttpMethods(ProductCategory.class, config, unsupportedMethods);
         disableHttpMethods(Country.class, config, unsupportedMethods);
         disableHttpMethods(State.class, config, unsupportedMethods);
+        disableHttpMethods(Order.class, config, unsupportedMethods);
 
         // expose the ids of the entities
         exposeIds(config);
+
+        // configure cors mapping
+        cors.addMapping(config.getBasePath() + "/**").allowedOrigins(theAllowedOrigins);
     }
 
     private void disableHttpMethods(Class theClass, RepositoryRestConfiguration config, HttpMethod[] unsupportedMethods) {
